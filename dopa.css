@@ -1,0 +1,96 @@
+/*!
+ * DOPAStrap v0.1 — dopamine-driven UI feedback, zero dependencies.
+ *
+ *   <button class="dopa dopa-max">OPEN</button>
+ *
+ * .dopa            required trigger class
+ * .dopa-sm/md/lg/max   intensity (default md)
+ * .dopa-common/rare/epic/legendary   color theme (default legendary)
+ * data-dopa-text="..."  override the popup label
+ * 'dopa:trigger' CustomEvent fires on click — hook it up to your SFX.
+ *
+ * Pair with dopa.js. Full reference in demo.html.
+ */
+
+.dopa {
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+  transition: transform .12s ease;
+}
+.dopa:active { transform: scale(.94); }
+
+.dopa.is-dopa-active {
+  animation: dopa-punch 650ms cubic-bezier(.34, 1.56, .64, 1);
+}
+@keyframes dopa-punch {
+  0%   { transform: scale(1)    rotate(0deg); }
+  28%  { transform: scale(1.22) rotate(-3deg); }
+  50%  { transform: scale(.93)  rotate(2deg); }
+  72%  { transform: scale(1.06) rotate(-1deg); }
+  100% { transform: scale(1)    rotate(0deg); }
+}
+
+/* the following are spawned onto <body> by dopa.js — you never write these by hand */
+
+.dopa-flash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+  background: radial-gradient(circle at var(--dopa-fx-x, 50%) var(--dopa-fx-y, 50%), var(--dopa-fx-color, #fff) 0%, transparent 70%);
+  opacity: 0;
+  animation: dopa-flash-anim .5s ease-out forwards;
+}
+@keyframes dopa-flash-anim {
+  0%   { opacity: 0; }
+  15%  { opacity: var(--dopa-fx-strength, .6); }
+  100% { opacity: 0; }
+}
+
+.dopa-shake { animation: dopa-shake-anim .4s ease-in-out; }
+@keyframes dopa-shake-anim {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(var(--dopa-shake-amt, -4px), calc(var(--dopa-shake-amt, -4px) * .6)); }
+  40% { transform: translate(calc(var(--dopa-shake-amt, 4px) * -1), var(--dopa-shake-amt, 4px)); }
+  60% { transform: translate(var(--dopa-shake-amt, 3px), calc(var(--dopa-shake-amt, -3px) * .5)); }
+  80% { transform: translate(calc(var(--dopa-shake-amt, -2px) * -1), var(--dopa-shake-amt, 2px)); }
+}
+
+.dopa-particle {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+  border-radius: 2px;
+  will-change: transform, opacity;
+  animation: dopa-particle-anim var(--dopa-p-dur, 700ms) cubic-bezier(.2, .7, .3, 1) forwards;
+}
+@keyframes dopa-particle-anim {
+  0%   { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dopa-p-x, 0px), var(--dopa-p-y, 0px)) rotate(var(--dopa-p-r, 180deg)) scale(.4); opacity: 0; }
+}
+
+.dopa-popup {
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 2147483000;
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: .02em;
+  animation: dopa-popup-anim 900ms cubic-bezier(.2, .8, .3, 1) forwards;
+}
+@keyframes dopa-popup-anim {
+  0%   { transform: translate(-50%, 0)     scale(.5);  opacity: 0; }
+  15%  { transform: translate(-50%, -8px)  scale(1.15); opacity: 1; }
+  30%  { transform: translate(-50%, -14px) scale(1);    opacity: 1; }
+  100% { transform: translate(-50%, -60px) scale(1);    opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dopa.is-dopa-active, .dopa-shake, .dopa-particle, .dopa-popup, .dopa-flash {
+    animation: none !important;
+    transition: none !important;
+  }
+}
